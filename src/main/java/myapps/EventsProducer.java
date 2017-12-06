@@ -1,5 +1,6 @@
 package myapps;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -15,10 +16,11 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 public class EventsProducer {
-    private final static String BOOTSTRAP_SERVERS = "localhost:9092"; // I can use more servers comma separated
+    private static final String BOOTSTRAP_SERVERS = "localhost:9092"; // I can use more servers comma separated
     private static final String TOPIC = "test";
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private static Producer<String, Map<String, Object>> createProducer() {
+    private static Producer<String, JsonNode> createProducer() {
         final Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 BOOTSTRAP_SERVERS);
@@ -31,14 +33,16 @@ public class EventsProducer {
     }
 
     static void runProducer(final Iterator<Map<String, Object>> it) throws Exception {
-        final Producer<String, Map<String, Object>> producer = createProducer();
+        final Producer<String, JsonNode> producer = createProducer();
         long time = System.currentTimeMillis();
 
         try {
             while (it.hasNext()) {
                 final Map<String, Object> event = it.next();
-                final ProducerRecord<String, Map<String, Object>> record =
-                        new ProducerRecord<>(TOPIC, (String) event.get("uuid"), event);
+                final ProducerRecord<String, JsonNode> record =
+                        new ProducerRecord<>(
+                                TOPIC, (String) event.get("uuid"),
+                                OBJECT_MAPPER.convertValue(event, JsonNode.class));
 
                 RecordMetadata metadata = producer.send(record).get();
 
@@ -68,7 +72,6 @@ public class EventsProducer {
         private final BufferedReader reader;
         private String lastLine = null;
         private boolean hasPendingLine = false;
-        private final ObjectMapper objectMapper = new ObjectMapper();
 
         BufferedReaderIterator(BufferedReader reader) {
             this.reader = reader;
@@ -97,6 +100,7 @@ public class EventsProducer {
             if (lastLine != null) {
                 valueToReturn = lastLine;
                 lastLine = null;
+                hasPendingLine = false;
             } else {
                 valueToReturn = readLine();
                 if (valueToReturn == null) {
@@ -104,7 +108,7 @@ public class EventsProducer {
                 }
             }
             try {
-                return objectMapper.convertValue(objectMapper.readTree(valueToReturn.getBytes()), Map.class);
+                return OBJECT_MAPPER.convertValue(OBJECT_MAPPER.readTree(valueToReturn.getBytes()), Map.class);
             } catch(IOException e) {
                 throw new RuntimeException(e);
             }
