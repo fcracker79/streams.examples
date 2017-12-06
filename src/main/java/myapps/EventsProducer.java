@@ -41,7 +41,7 @@ public class EventsProducer {
                 final Map<String, Object> event = it.next();
                 final ProducerRecord<String, JsonNode> record =
                         new ProducerRecord<>(
-                                TOPIC, (String) event.get("uuid"),
+                                TOPIC, (String) event.get("id"),
                                 OBJECT_MAPPER.convertValue(event, JsonNode.class));
 
                 RecordMetadata metadata = producer.send(record).get();

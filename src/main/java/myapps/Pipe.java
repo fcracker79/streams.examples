@@ -25,7 +25,7 @@ public class Pipe {
      6. bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
 
      In order to clear topic:
-       - bin/kafka-topics.sh --zookeeper localhost:9092 --alter --topic test --config retention.ms=100
+       - bin/kafka-topics.sh --zookeeper localhost:9092 --alter --topic test --config retention.ms=0
      */
     public static void main(String ... args) throws Exception {
         final Properties props = new Properties();
