@@ -16,7 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 public class EventsProducer {
-    private static final String BOOTSTRAP_SERVERS = "localhost:9092"; // I can use more servers comma separated
+    private static final String BOOTSTRAP_SERVERS = "localhost:29092"; // I can use more servers comma separated
     private static final String TOPIC = "test";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

@@ -16,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class Pipe {
     /*
-     Before starting:
+     Before starting (WITHOUT swarm):
      1. bin/zookeeper-server-start.sh config/zookeeper.properties
      2. bin/kafka-server-start.sh config/server.properties
      3. bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
@@ -24,13 +24,21 @@ public class Pipe {
      5. bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-output --from-beginning
      6. bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
 
+     Before starting (WITH swarm):
+     1. docker stack deploy -c docker-compose-v3.yml confluent
+     2. inside kafka node:
+        1. kafka-topics --create --zookeeper localhost:32181 --replication-factor 1 --partitions 1 --topic test
+        2. kafka-topics --create --zookeeper localhost:32181 --replication-factor 1 --partitions 1 --topic test-output
+        3. kafka-topics --zookeeper localhost:32181 --alter --topic test --config retention.ms=0
+        4. kafka-topics --zookeeper localhost:32181 --alter --topic test-output --config retention.ms=0
+
      In order to clear topic:
-       - bin/kafka-topics.sh --zookeeper localhost:9092 --alter --topic test --config retention.ms=0
+       - bin/kafka-topics.sh --zookeeper localhost:9092 --alter --topic test --config retention.ms=100
      */
     public static void main(String ... args) throws Exception {
         final Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-pipe");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
         final StreamsBuilder builder = new StreamsBuilder();
         final ObjectMapper jsonMapper = new ObjectMapper();
         final Serde<JsonNode> jsonSerdes = Serdes.serdeFrom(new JsonSerializer(), new JsonDeserializer());
