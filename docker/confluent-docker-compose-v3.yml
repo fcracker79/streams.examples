@@ -14,7 +14,8 @@ services:
       - "moby:127.0.0.1"
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+#    image: confluentinc/cp-kafka:latest
+    image: my_confluent:latest
     networks:
       - confluent_network
     ports:
@@ -31,4 +32,4 @@ services:
 
 networks:
   confluent_network:
-    external: true
+   external: true
