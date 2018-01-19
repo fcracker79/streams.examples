@@ -16,6 +16,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class Pipe {
     /*
+     To create:
+     mvn archetype:generate     -DarchetypeGroupId=org.apache.kafka     -DarchetypeArtifactId=streams-quickstart-java     -DarchetypeVersion=1.0.0     -DgroupId=streams.examples     -DartifactId=streams.examples     -Dversion=0.1     -Dpackage=myapps
      Before starting (WITHOUT swarm):
      1. bin/zookeeper-server-start.sh config/zookeeper.properties
      2. bin/kafka-server-start.sh config/server.properties
