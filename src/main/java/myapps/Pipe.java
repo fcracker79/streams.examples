@@ -35,7 +35,13 @@ public class Pipe {
         4. kafka-topics --zookeeper localhost:32181 --alter --topic test-output --config retention.ms=0
 
      In order to clear topic:
-       - bin/kafka-topics.sh --zookeeper localhost:9092 --alter --topic test --config retention.ms=100
+       - bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic test --config retention.ms=100
+
+     Message with schema:
+     kafka-avro-console-producer \
+ --broker-list localhost:9092 --topic test2 \
+ --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"id","type":"int"},{"name":"product", "type": "string"}, {"name":"quantity", "type": "int"}, {"name":"price",
+ "type": "float"}]}'
      */
     public static void main(String ... args) throws Exception {
         final Properties props = new Properties();
