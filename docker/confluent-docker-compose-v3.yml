@@ -16,6 +16,7 @@ services:
   kafka:
 #    image: confluentinc/cp-kafka:latest
     image: my_confluent:latest
+    hostname: kafka
     networks:
       - confluent_network
     ports:
