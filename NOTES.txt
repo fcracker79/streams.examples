@@ -25,3 +25,17 @@ To create:
  --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"id","type":"int"},{"name":"product", "type": "string"}, {"name":"quantity", "type": "int"}, {"name":"price",
  "type": "float"}]}'
 
+
+
+Some useful commands:
+
+Topic removal:
+./kafka-topics --delete --zookeeper localhost:2181 --topic <topic name>
+
+Topic info:
+./kafka-topics --describe --zookeeper localhost:2181
+
+Topic repartition:
+./kafka-topics --zookeeper localhost:2181 --alter --topic <topic name> --partitions <partitions number>
+Beware: we might experience "org.apache.kafka.streams.errors.StreamsException: Could not create internal topics.".
+In case, remove all the topics that end with '-changelog' or '-repartition'.
