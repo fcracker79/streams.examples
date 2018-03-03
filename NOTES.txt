@@ -1,0 +1,27 @@
+To create:
+     mvn archetype:generate     -DarchetypeGroupId=org.apache.kafka     -DarchetypeArtifactId=streams-quickstart-java     -DarchetypeVersion=1.0.0     -DgroupId=streams.examples     -DartifactId=streams.examples     -Dversion=0.1     -Dpackage=myapps
+     Before starting (WITHOUT swarm):
+     1. bin/zookeeper-server-start.sh config/zookeeper.properties
+     2. bin/kafka-server-start.sh config/server.properties
+     3. bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+     4. bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test-output
+     5. bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-output --from-beginning
+     6. bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+
+     Before starting (WITH swarm):
+     1. docker stack deploy -c docker-compose-v3.yml confluent
+     2. inside kafka node:
+        1. kafka-topics --create --zookeeper localhost:32181 --replication-factor 1 --partitions 1 --topic test
+        2. kafka-topics --create --zookeeper localhost:32181 --replication-factor 1 --partitions 1 --topic test-output
+        3. kafka-topics --zookeeper localhost:32181 --alter --topic test --config retention.ms=0
+        4. kafka-topics --zookeeper localhost:32181 --alter --topic test-output --config retention.ms=0
+
+     In order to clear topic:
+       - bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic test --config retention.ms=100
+
+     Message with schema:
+     kafka-avro-console-producer \
+ --broker-list localhost:9092 --topic test2 \
+ --property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"id","type":"int"},{"name":"product", "type": "string"}, {"name":"quantity", "type": "int"}, {"name":"price",
+ "type": "float"}]}'
+

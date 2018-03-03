@@ -1,25 +1,26 @@
 package myapps;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.*;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.connect.json.JsonDeserializer;
+import org.apache.kafka.connect.json.JsonSerializer;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
-public class EventsConsumer {
-    private static final String BOOTSTRAP_SERVERS = "localhost:29092"; // I can use more servers comma separated
-    private static final String TOPIC = "test-output";
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+public class CustomEventsConsumer {
+    private static final String BOOTSTRAP_SERVERS = "localhost:9092"; // I can use more servers comma separated
 
     private static Consumer<String, JsonNode> createConsumer() {
         final Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 BOOTSTRAP_SERVERS);
-        props.put(ConsumerConfig.CLIENT_ID_CONFIG, "EventsConsumer");
+        props.put(ConsumerConfig.CLIENT_ID_CONFIG, "EventsMultiplexer");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
@@ -27,18 +28,26 @@ public class EventsConsumer {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "MainGroup");
         return new KafkaConsumer<>(props);
     }
-    public static void main(String ... args) throws Exception {
+
+    public static void main(String ... args) {
+        if (args.length == 0) {
+            System.out.println("Usage: <command> event_name [ event name]*");
+            System.exit(1);
+        }
         final Consumer<String, JsonNode> consumer = createConsumer();
-        consumer.subscribe(Collections.singleton(TOPIC));
+        final Collection<String> topics = Arrays.asList(args);
+        consumer.subscribe(topics);
+        final long time = System.currentTimeMillis();
+
         while (true) {
             final ConsumerRecords<String, JsonNode> consumerRecords = consumer.poll(1000);
             System.out.format("Records: %d\n", consumerRecords.count());
             for (ConsumerRecord<String, JsonNode> record : consumerRecords) {
-                System.out.format(
-                        "[%s]: %s\n",
-                        record.key(), record.value()
-                );
+                final String eventName = record.value().path("type").asText();
+                System.out.format("[%s]: %s\nevent type %s, topics [%s]",
+                        record.key(), record.value(), eventName, topics);
             }
+
             consumer.commitSync();
         }
     }
