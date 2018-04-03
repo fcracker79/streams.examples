@@ -132,5 +132,15 @@
             <artifactId>kafka-streams</artifactId>
             <version>${kafka.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.j256.simplejmx</groupId>
+            <artifactId>simplejmx</artifactId>
+            <version>1.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.11.0</version>
+        </dependency>
     </dependencies>
 </project>
