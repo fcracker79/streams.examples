@@ -2,3 +2,8 @@
 *.iml
 target
 data
+.gradle
+gradlew
+gradlew.bat
+build
+gradle
